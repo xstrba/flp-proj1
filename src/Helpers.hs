@@ -1,5 +1,8 @@
 module Helpers (printResult, printKnapsack, printItems) where
-import Types (Knapsack(maxWeight, minCost, items), Item(weight, cost), ReturnType(Success, Failure, Print, Error))
+import Types (
+    Knapsack (maxWeight, minCost, items),
+    Item (weight, cost),
+    ReturnType (Success, Failure, Print, Error, Debug))
 
 printItems :: [Item] -> IO ()
 printItems [] = putStrLn "items: []"
@@ -34,3 +37,4 @@ printResult (Print a) = printKnapsack a
 printResult (Success a) = print a
 printResult (Failure a) = print a
 printResult (Error a) = print $ "Error: " ++ a
+printResult (Debug a) = print $ "Info: " ++ a

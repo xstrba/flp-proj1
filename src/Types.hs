@@ -1,7 +1,8 @@
 module Types (
-    Item(weight, cost, Item),
-    Knapsack(maxWeight, minCost, items, Knapsack),
-    ReturnType(Success, Failure, Print, Error),
+    Item (weight, cost, Item),
+    Knapsack (maxWeight, minCost, items, Knapsack),
+    ReturnType (Success, Failure, Print, Error, Debug),
+    State (State, sack, filled, value),
     exampleSack
 ) where
 
@@ -19,7 +20,15 @@ data Knapsack = Knapsack
     } deriving (Show)
 
 data ReturnType = Success ![Int] | Failure !Bool | Print !Knapsack | Error !String
+        | Debug !String
     deriving (Show)
+
+data State = State
+    {
+        sack :: !Knapsack,
+        filled :: ![Int],
+        value :: !Int
+    } deriving (Show)
 
 -- This is for testing only
 exampleSack :: Knapsack

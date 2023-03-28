@@ -1,6 +1,6 @@
 TARGET=./flp22-fun
 BUILD_DIR=./build
-SRCS=./src/Main.hs ./src/Types.hs ./src/Helpers.hs ./src/Parser.hs ./src/BruteSolver.hs ./src/OptimizedSolver.hs
+SRCS=./src/Main.hs ./src/Types.hs ./src/Helpers.hs ./src/Parser.hs ./src/BruteSolver.hs ./src/OptimizedSolver.hs ./src/State.hs
 
 default:
 	make flp22-fun
