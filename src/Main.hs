@@ -1,12 +1,22 @@
+-- ------------------------------------------------
+-- @file Main.hs  ---------------------------------
+-- @author Boris Štrbák (xstrba05)  ---------------
+-- ------------------------------------------------
+-- Main module for handling file input or stdin,  -
+-- parsing arguments and running actions for  -----
+-- options i, b and o.  ---------------------------
+-- ------------------------------------------------
+
 module Main where
 import System.Environment (getArgs, getProgName)
-import Types (ReturnType(Error))
+import Types (ReturnType (Error))
 import Helpers (printResult)
 import Control.Exception (try, SomeException)
 import Parser (parseKnapsack)
 import BruteSolver (solveBf)
 import OptimizedSolver (solveSa)
 
+-- print help message to stdout
 help :: IO ()
 help = do
     progName <- getProgName
@@ -23,7 +33,8 @@ help = do
     putStrLn "  -o    Vypise reseni knapsack problemu pomoci simulovaneho zihani."
     putStrLn "        Vypise False v pripade ze nenajde reseni."
 
-
+-- won't throw exception if there is some while reading file
+-- instead will return custom type Error
 safeFileReader :: String -> (String -> ReturnType) -> IO ()
 safeFileReader fileName fn = do
     fileContentsOrError <- try (readFile fileName) :: IO (Either SomeException String)
@@ -31,6 +42,8 @@ safeFileReader fileName fn = do
         Left errorMsg -> printResult $ Error (show errorMsg)
         Right fileContents -> printResult $ fn fileContents
 
+-- won't throw exception if there is some while reading stdin
+-- instead will return custom type Error
 safeStdinReader :: (String -> ReturnType) -> IO ()
 safeStdinReader fn = do
     fileContentsOrError <- try getContents :: IO (Either SomeException String)
@@ -38,6 +51,9 @@ safeStdinReader fn = do
         Left errorMsg -> printResult $ Error (show errorMsg)
         Right fileContents -> printResult $ fn fileContents
 
+-- read file or stdin
+-- run action given by command argument
+-- or display help
 main :: IO ()
 main = let
     startWithTwoArgs :: String -> String -> IO ()

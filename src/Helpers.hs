@@ -1,9 +1,18 @@
+-- ------------------------------------------------
+-- @file Helpers.hs  ------------------------------
+-- @author Boris Štrbák (xstrba05)  ---------------
+-- ------------------------------------------------
+-- Module with function for parsing string into  --
+-- knapsack representation  -----------------------
+-- ------------------------------------------------
+
 module Helpers (printResult, printKnapsack, printItems) where
 import Types (
     Knapsack (maxWeight, minCost, items),
     Item (weight, cost),
     ReturnType (Success, Failure, Print, Error, Debug))
 
+-- print items of knapsack
 printItems :: [Item] -> IO ()
 printItems [] = putStrLn "items: []"
 printItems xs = let
@@ -24,6 +33,7 @@ printItems xs = let
     printItemByItem xs
     putStrLn "]"
 
+-- print knapsack
 printKnapsack :: Knapsack -> IO ()
 printKnapsack a = do
     putStrLn "Knapsack {"
@@ -32,6 +42,7 @@ printKnapsack a = do
     printItems $ items a
     putStrLn "}"
 
+-- print ReturnType (result of app)
 printResult :: ReturnType -> IO ()
 printResult (Print a) = printKnapsack a
 printResult (Success a) = putStrLn ("Solution [" ++ printList a ++ "]")

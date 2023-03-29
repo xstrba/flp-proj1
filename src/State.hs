@@ -1,7 +1,18 @@
+-- ------------------------------------------------
+-- @file State.hs  --------------------------------
+-- @author Boris Štrbák (xstrba05)  ---------------
+-- ------------------------------------------------
+-- Module with functions for working with State.  -
+-- ------------------------------------------------
+
+-- because of stateWithMaxValue function
+-- we never pass empty list to this function
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+
 module State (initState, filledWeight, stateWithMaxValue) where
 import Types (State (State, sack, filled, value), Item (weight, cost), Knapsack (items))
 
+-- creates new state from sack and list of zeroes or ones
 initState :: Knapsack -> [Int] -> State
 initState initSack initFilled = State {sack = initSack, filled = capacities, value = countedValue}
     where
