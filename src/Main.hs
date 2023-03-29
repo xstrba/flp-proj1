@@ -1,6 +1,6 @@
 module Main where
 import System.Environment (getArgs, getProgName)
-import Types (ReturnType(Success, Print, Failure, Error), exampleSack)
+import Types (ReturnType(Error))
 import Helpers (printResult)
 import Control.Exception (try, SomeException)
 import Parser (parseKnapsack)

@@ -1,5 +1,5 @@
 module BruteSolver (solveBf) where
-import Types (ReturnType (Print, Success, Failure), State (State, sack, filled, value), Knapsack (maxWeight, minCost))
+import Types (ReturnType (Print, Success, Failure), State (sack, filled, value), Knapsack (maxWeight, minCost))
 import State (initState, filledWeight, stateWithMaxValue)
 
 solveBf :: ReturnType -> ReturnType
@@ -10,24 +10,21 @@ solveBf (Print a)
         solvedState = solveState $ initState a []
 solveBf a = a
 
-getSubstates :: State -> Int -> [State]
-getSubstates _ 0 = []
-getSubstates rootState len
-    | filledWeight newState <= maxWeight (sack newState) = newState:getSubstates rootState (len - 1)
-    | otherwise = getSubstates rootState (len - 1)
+solveSubstates :: State -> Int -> [State]
+solveSubstates _ 0 = []
+solveSubstates rootState len
+    | filledWeight newState <= maxWeight (sack newState) = newState:solveSubstates rootState (len - 1)
+    | otherwise = solveSubstates rootState (len - 1)
     where
         newFilled = getNewFilled len (filled rootState)
-        newState = initState (sack rootState) newFilled
-
-solveStates :: [State] -> [State]
-solveStates = map solveState
+        newState = solveState $ initState (sack rootState) newFilled
 
 solveState :: State -> State
 solveState a
     | null substates = a
-    | otherwise = stateWithMaxValue $ solveStates substates
+    | otherwise = stateWithMaxValue (a:substates)
     where
-        substates = getSubstates a (lenUntilFirstOne (filled a) 0)
+        substates = solveSubstates a (lenUntilFirstOne (filled a) 0)
 
 lenUntilFirstOne :: [Int] -> Int -> Int
 lenUntilFirstOne [] n = n
@@ -41,10 +38,3 @@ getNewFilled 1 [] = [1]
 getNewFilled 1 (_:xs) = 1:xs
 getNewFilled n (_:xs) = 0:getNewFilled (n - 1) xs
 getNewFilled n [] = 0:getNewFilled (n - 1) []
-
--- getNextStates :: State -> [State]
--- getNextStates state = let
---     buildState
---     getNextStates1 :: State -> Int -> [State]
---     getNextStates1 state1 n = 
---     in getNextStates1 state 0

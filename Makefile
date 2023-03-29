@@ -14,3 +14,9 @@ force:
 
 clean:
 	rm -rf ${TARGET} ${BUILD_DIR}
+
+test_b:
+	./test.sh b
+
+test_o:
+	./test.sh o
