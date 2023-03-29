@@ -1,4 +1,5 @@
-module State (initState, filledWeight) where
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
+module State (initState, filledWeight, stateWithMaxValue) where
 import Types (State (State, sack, filled, value), Item (weight, cost), Knapsack (items))
 
 initState :: Knapsack -> [Int] -> State
@@ -9,12 +10,19 @@ initState initSack initFilled = State {sack = initSack, filled = capacities, val
             initStatesCapacity (_:xs) [] = 0:initStatesCapacity xs []
             initStatesCapacity (_:xs) (a:as) = a:initStatesCapacity xs as
             in initStatesCapacity (items initSack) initFilled
-        
+
         countedValue = let
             countValue [] _ = 0
             countValue _ [] = 0
             countValue (x:xs) (a:as) = (cost x * a) + countValue xs as
             in countValue (items initSack) initFilled
+
+stateWithMaxValue :: [State] -> State
+stateWithMaxValue [x] = x
+stateWithMaxValue (x:xs)
+    | value maxValueState > value x = maxValueState
+    | otherwise = x
+    where maxValueState = stateWithMaxValue xs
 
 filledWeight :: State -> Int
 filledWeight state = let

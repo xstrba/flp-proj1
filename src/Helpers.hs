@@ -34,7 +34,12 @@ printKnapsack a = do
 
 printResult :: ReturnType -> IO ()
 printResult (Print a) = printKnapsack a
-printResult (Success a) = print a
+printResult (Success a) = putStrLn ("Solution [" ++ printList a ++ "]")
+    where
+        printList :: Show a => [a] -> String
+        printList [] = ""
+        printList [x] = show x
+        printList (x:xs) = show x ++ " " ++ printList xs
 printResult (Failure a) = print a
-printResult (Error a) = print $ "Error: " ++ a
-printResult (Debug a) = print $ "Info: " ++ a
+printResult (Error a) = putStrLn $ "Error: " ++ a
+printResult (Debug a) = putStrLn $ "Info: " ++ a
