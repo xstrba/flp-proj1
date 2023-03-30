@@ -9,7 +9,7 @@ module Types (
     Item (weight, cost, Item),
     Knapsack (maxWeight, minCost, items, Knapsack),
     ReturnType (Success, Failure, Print, Error, Debug),
-    State (State, sack, filled, value),
+    State (State, filled, value, sWeight),
     exampleSack
 ) where
 
@@ -42,9 +42,9 @@ data ReturnType = Success ![Int] | Failure !Bool | Print !Knapsack | Error !Stri
 -- is in sack or not and holding value of items in sack.
 data State = State
     {
-        sack :: !Knapsack,
         filled :: ![Int],
-        value :: !Int
+        value :: !Int,
+        sWeight :: !Int
     } deriving (Show)
 
 -- This is for testing only

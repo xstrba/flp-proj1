@@ -7,8 +7,8 @@
 -- ------------------------------------------------
 
 module BruteSolver (solveBf) where
-import Types (ReturnType (Print, Success, Failure), State (sack, filled, value), Knapsack (maxWeight, minCost))
-import State (initState, filledWeight, stateWithMaxValue)
+import Types (ReturnType (Print, Success, Failure), State (filled, value, sWeight), Knapsack (maxWeight, minCost))
+import State (initState, stateWithMaxValue)
 
 -- start solving knapsack representing in Print (ReturnType) data type
 -- returns given argument if ReturnType is not of type Print
@@ -16,10 +16,10 @@ import State (initState, filledWeight, stateWithMaxValue)
 -- or Failure with value False if there is no solution
 solveBf :: ReturnType -> ReturnType
 solveBf (Print a)
-    | value solvedState >= minCost (sack solvedState) = Success (filled solvedState)
+    | value solvedState >= minCost a = Success (filled solvedState)
     | otherwise = Failure False
     where
-        solvedState = solveState $ initState a []
+        solvedState = solveState a $ initState a []
 solveBf a = a
 
 -- solve substates (or simply next states) of given state
@@ -30,23 +30,23 @@ solveBf a = a
 -- for [0 0 1] it would be 2
 -- returns solved substates, which means that for each substate returns
 -- state from its tree with highest cost value
-solveSubstates :: State -> Int -> [State]
-solveSubstates _ 0 = []
-solveSubstates rootState len
-    | filledWeight newState <= maxWeight (sack newState) = newState:solveSubstates rootState (len - 1)
-    | otherwise = solveSubstates rootState (len - 1)
+solveSubstates :: Knapsack -> State -> Int -> [State]
+solveSubstates _ _ 0 = []
+solveSubstates sack rootState len
+    | sWeight newState <= maxWeight sack = newState:solveSubstates sack rootState (len - 1)
+    | otherwise = solveSubstates sack rootState (len - 1)
     where
         newFilled = getNewFilled len (filled rootState)
-        newState = solveState $ initState (sack rootState) newFilled
+        newState = solveState sack $ initState sack newFilled
 
 -- solve state by solving it`s substate
 -- returns state with highest cost value in it`s tree
-solveState :: State -> State
-solveState a
+solveState :: Knapsack -> State -> State
+solveState sack a
     | null substates = a
     | otherwise = stateWithMaxValue (a:substates)
     where
-        substates = solveSubstates a (lenUntilFirstOne (filled a) 0)
+        substates = solveSubstates sack a (lenUntilFirstOne (filled a) 0)
 
 -- basically it is number of zeroes until first one in list
 lenUntilFirstOne :: [Int] -> Int -> Int
