@@ -6,11 +6,13 @@
 -- knapsack representation  -----------------------
 -- ------------------------------------------------
 
-module Helpers (printResult, printKnapsack, printItems) where
+module Helpers (printResult, printKnapsack, printItems,
+    getRandomBit, getRandomNumber, replaceBitOnPosition) where
 import Types (
     Knapsack (maxWeight, minCost, items),
     Item (weight, cost),
     ReturnType (Success, Failure, Print, Error, Debug))
+import System.Random (randomRIO)
 
 -- print items of knapsack
 printItems :: [Item] -> IO ()
@@ -54,3 +56,17 @@ printResult (Success a) = putStrLn ("Solution [" ++ printList a ++ "]")
 printResult (Failure a) = print a
 printResult (Error a) = putStrLn $ "Error: " ++ a
 printResult (Debug a) = putStrLn $ "Info: " ++ a
+
+getRandomBit :: IO Int
+getRandomBit = randomRIO (0, 1)
+
+getRandomNumber :: Int -> Int -> IO Int
+getRandomNumber low high = randomRIO (low, high)
+
+replaceBitOnPosition :: [Int] -> Int -> [Int]
+replaceBitOnPosition _ 0 = []
+replaceBitOnPosition [] _ = []
+replaceBitOnPosition (x:xs) 1
+    | x == 1 = 0:xs
+    | otherwise = 1:xs
+replaceBitOnPosition (x:xs) n = x:replaceBitOnPosition xs (n - 1)

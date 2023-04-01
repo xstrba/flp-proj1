@@ -35,21 +35,21 @@ help = do
 
 -- won't throw exception if there is some while reading file
 -- instead will return custom type Error
-safeFileReader :: String -> (String -> ReturnType) -> IO ()
+safeFileReader :: String -> (ReturnType -> IO ()) -> IO ()
 safeFileReader fileName fn = do
     fileContentsOrError <- try (readFile fileName) :: IO (Either SomeException String)
     case fileContentsOrError of
         Left errorMsg -> printResult $ Error (show errorMsg)
-        Right fileContents -> printResult $ fn fileContents
+        Right fileContents -> fn $ parseKnapsack fileContents
 
 -- won't throw exception if there is some while reading stdin
 -- instead will return custom type Error
-safeStdinReader :: (String -> ReturnType) -> IO ()
+safeStdinReader :: (ReturnType -> IO ()) -> IO ()
 safeStdinReader fn = do
     fileContentsOrError <- try getContents :: IO (Either SomeException String)
     case fileContentsOrError of
         Left errorMsg -> printResult $ Error (show errorMsg)
-        Right fileContents -> printResult $ fn fileContents
+        Right fileContents -> fn $ parseKnapsack fileContents
 
 -- read file or stdin
 -- run action given by command argument
@@ -58,15 +58,15 @@ main :: IO ()
 main = let
     startWithTwoArgs :: String -> String -> IO ()
     startWithTwoArgs a b = case a of
-        "-i" -> safeFileReader b parseKnapsack
-        "-b" -> safeFileReader b (solveBf . parseKnapsack)
-        "-o" -> safeFileReader b (solveSa . parseKnapsack)
+        "-i" -> safeFileReader b printResult
+        "-b" -> safeFileReader b (printResult.solveBf)
+        "-o" -> safeFileReader b solveSa
         _anyOtherOption -> help
     startWithOneArg :: String -> IO ()
     startWithOneArg a = case a of
-        "-i" -> safeStdinReader parseKnapsack
-        "-b" -> safeStdinReader (solveBf . parseKnapsack)
-        "-o" -> safeStdinReader (solveSa . parseKnapsack)
+        "-i" -> safeStdinReader printResult
+        "-b" -> safeStdinReader (printResult.solveBf)
+        "-o" -> safeStdinReader solveSa
         _anyOtherOption -> help
 
     in do

@@ -7,8 +7,12 @@
 -- ------------------------------------------------
 
 module BruteSolver (solveBf) where
-import Types (ReturnType (Print, Success, Failure), State (filled, value, sWeight), Knapsack (maxWeight, minCost))
+import Types (
+    ReturnType (Print, Success, Failure),
+    State (filled, value, sWeight),
+    Knapsack (maxWeight, minCost))
 import State (initState, stateWithMaxValue)
+import Helpers (printResult)
 
 -- start solving knapsack representing in Print (ReturnType) data type
 -- returns given argument if ReturnType is not of type Print

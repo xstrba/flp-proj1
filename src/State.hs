@@ -9,8 +9,13 @@
 -- we never pass empty list to this function
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-module State (initState, stateWithMaxValue) where
-import Types (State (State, filled, value, sWeight), Item (weight, cost), Knapsack (items))
+module State (initState, stateWithMaxValue, randomlyFilledState, statesConstrainedValue) where
+import Types (
+    State (State, filled, value, sWeight),
+    Item (weight, cost),
+    Knapsack (items, maxWeight, minCost, Knapsack))
+import Helpers (getRandomBit)
+import Control.Monad (replicateM)
 
 -- creates new state from sack and list of zeroes or ones
 initState :: Knapsack -> [Int] -> State
@@ -27,7 +32,7 @@ initState initSack initFilled = State {filled = capacities, value = countedValue
             countValue _ [] = 0
             countValue (x:xs) (a:as) = (cost x * a) + countValue xs as
             in countValue (items initSack) initFilled
-        
+
         countedWeight = let
             countWeight :: [Item] -> [Int] -> Int
             countWeight [] _ = 0
@@ -41,3 +46,15 @@ stateWithMaxValue (x:xs)
     | value maxValueState > value x = maxValueState
     | otherwise = x
     where maxValueState = stateWithMaxValue xs
+
+randomlyFilledState :: Knapsack -> IO State
+randomlyFilledState sack = do
+  randomBits <- replicateM (length $ items sack) getRandomBit
+  return $ initState sack randomBits
+
+statesConstrainedValue :: Knapsack -> State -> Float
+statesConstrainedValue sack state
+    | sWeight state > maxWeight sack || value state < minCost sack = negate 1 / fromIntegral countedValue
+    | otherwise = fromIntegral $ value state
+    where
+        countedValue = (maxWeight sack - sWeight state) + (value state - minCost sack)
