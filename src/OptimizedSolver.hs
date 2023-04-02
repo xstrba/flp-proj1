@@ -11,37 +11,44 @@ import Types (
     ReturnType (Print, Failure, Success),
     State (filled, value, sWeight),
     Knapsack (minCost, maxWeight))
-import State (randomlyFilledState, statesConstrainedValue, initState)
+import State (randomlyFilledState, statesConstrainedValue, initState, stateWithMaxConstrainedValue)
 import Helpers (printResult, getRandomNumber, getRandomFloat, replaceBitOnPosition)
+import Control.Monad (replicateM)
 
 solveSa :: ReturnType -> IO ()
 solveSa (Print a) = do
-    extractedState <- randomlyFilledState a
-    resultState <- saIteration a extractedState 50.00 0.99 1
+    resultStates <- replicateM 10 (makeSaTry a)
+    let resultState = stateWithMaxConstrainedValue resultStates a
     let result = if (value resultState >= minCost a) && (sWeight resultState <= maxWeight a)
         then Success $ filled resultState
         else Failure False
     printResult result
 solveSa a = printResult a
 
+makeSaTry :: Knapsack -> IO State
+makeSaTry sack = do
+    extractedState <- randomlyFilledState sack
+    saIteration sack extractedState 100.00 0.98 0
+
 -- sack, currentState, temperatur, alpha, currentIteration = new currentState
 saIteration :: Knapsack -> State -> Float -> Float -> Int -> IO State
-saIteration _ currentState _ _ 1001 = do
+saIteration _ currentState _ _ 1000 = do
     let resultState = currentState
     return resultState
 saIteration sack currentState tmp alpha iter = do
     neighbor <- makeRandomNeighbor sack currentState
+    let temp = tmp * (1.00 - (fromIntegral iter + 1.00) / 1000.00)
     let currentValue = statesConstrainedValue sack currentState
     let neighborsValue = statesConstrainedValue sack neighbor
-    let p = exp $ (neighborsValue - currentValue) / tmp
+    let p = if neighborsValue > currentValue
+        then 1.1
+        else exp $ neighborsValue - currentValue / temp
+    -- putStrLn $ show p
     rand <- getRandomFloat 0 1
-    let nextState = if (neighborsValue > currentValue) || (rand < p)
+    let nextState = if rand < p
         then neighbor
         else currentState
-
-    let newTmp = tmp * alpha
-    let newConstrainedTmp = if newTmp > 0.000001 then newTmp else 0.000001
-    saIteration sack nextState newConstrainedTmp alpha (iter + 1)
+    saIteration sack nextState tmp alpha (iter + 1)
 
 makeRandomNeighbor :: Knapsack -> State -> IO State
 makeRandomNeighbor sack state = do

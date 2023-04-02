@@ -9,7 +9,7 @@
 -- we never pass empty list to this function
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
-module State (initState, stateWithMaxValue, randomlyFilledState, statesConstrainedValue) where
+module State (initState, stateWithMaxValue, randomlyFilledState, statesConstrainedValue, stateWithMaxConstrainedValue) where
 import Types (
     State (State, filled, value, sWeight),
     Item (weight, cost),
@@ -47,6 +47,13 @@ stateWithMaxValue (x:xs)
     | otherwise = x
     where maxValueState = stateWithMaxValue xs
 
+stateWithMaxConstrainedValue :: [State] -> Knapsack -> State
+stateWithMaxConstrainedValue [x] a = x
+stateWithMaxConstrainedValue (x:xs) a
+    | statesConstrainedValue a maxValueState > statesConstrainedValue a x = maxValueState
+    | otherwise = x
+    where maxValueState = stateWithMaxConstrainedValue xs a
+
 randomlyFilledState :: Knapsack -> IO State
 randomlyFilledState sack = do
   randomBits <- replicateM (length $ items sack) getRandomBit
@@ -54,8 +61,7 @@ randomlyFilledState sack = do
 
 statesConstrainedValue :: Knapsack -> State -> Float
 statesConstrainedValue sack state
-    -- + 42 just so we dont have negative values
-    | sWeight state > maxWeight sack || value state < minCost sack = (negate 1 / fromIntegral countedValue) + 42
-    | otherwise = fromIntegral $ value state + 42
+    | sWeight state > maxWeight sack || value state < minCost sack = 0.00
+    | otherwise = fromIntegral $ value state
     where
         countedValue = (maxWeight sack - sWeight state) + (value state - minCost sack)
