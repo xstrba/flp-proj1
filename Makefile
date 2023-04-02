@@ -29,4 +29,5 @@ test_o:
 
 # crate resulting archive
 zip:
+	rm -f ${ARCHIVE} || true
 	zip ${ARCHIVE} ${SRCS} ./tests/* ./test.sh ./Makefile ./README.md

@@ -28,14 +28,14 @@ solveSa a = printResult a
 makeSaTry :: Knapsack -> IO State
 makeSaTry sack = do
     extractedState <- randomlyFilledState sack
-    saIteration sack extractedState 100.00 0.98 0
+    saIteration sack extractedState 100.00 0
 
 -- sack, currentState, temperatur, alpha, currentIteration = new currentState
-saIteration :: Knapsack -> State -> Float -> Float -> Int -> IO State
-saIteration _ currentState _ _ 1000 = do
+saIteration :: Knapsack -> State -> Float -> Int -> IO State
+saIteration _ currentState _ 1000 = do
     let resultState = currentState
     return resultState
-saIteration sack currentState tmp alpha iter = do
+saIteration sack currentState tmp iter = do
     neighbor <- makeRandomNeighbor sack currentState
     let temp = tmp * (1.00 - (fromIntegral iter + 1.00) / 1000.00)
     let currentValue = statesConstrainedValue sack currentState
@@ -48,7 +48,7 @@ saIteration sack currentState tmp alpha iter = do
     let nextState = if rand < p
         then neighbor
         else currentState
-    saIteration sack nextState tmp alpha (iter + 1)
+    saIteration sack nextState tmp (iter + 1)
 
 makeRandomNeighbor :: Knapsack -> State -> IO State
 makeRandomNeighbor sack state = do

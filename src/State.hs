@@ -7,7 +7,6 @@
 
 -- because of stateWithMaxValue function
 -- we never pass empty list to this function
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
 module State (initState, stateWithMaxValue, randomlyFilledState, statesConstrainedValue, stateWithMaxConstrainedValue) where
 import Types (
@@ -40,7 +39,11 @@ initState initSack initFilled = State {filled = capacities, value = countedValue
             countWeight (x:xs) (a:as) = (weight x * a) + countWeight xs as
             in countWeight (items initSack) initFilled
 
+emptyState :: State
+emptyState = State {filled = [], value = 0, sWeight = 0}
+
 stateWithMaxValue :: [State] -> State
+stateWithMaxValue [] = emptyState 
 stateWithMaxValue [x] = x
 stateWithMaxValue (x:xs)
     | value maxValueState > value x = maxValueState
@@ -48,6 +51,7 @@ stateWithMaxValue (x:xs)
     where maxValueState = stateWithMaxValue xs
 
 stateWithMaxConstrainedValue :: [State] -> Knapsack -> State
+stateWithMaxConstrainedValue [] _ = emptyState
 stateWithMaxConstrainedValue [x] _ = x
 stateWithMaxConstrainedValue (x:xs) a
     | statesConstrainedValue a maxValueState > statesConstrainedValue a x = maxValueState
