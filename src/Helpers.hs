@@ -7,7 +7,7 @@
 -- ------------------------------------------------
 
 module Helpers (printResult, printKnapsack, printItems,
-    getRandomBit, getRandomNumber, replaceBitOnPosition) where
+    getRandomBit, getRandomNumber, replaceBitOnPosition, getRandomFloat) where
 import Types (
     Knapsack (maxWeight, minCost, items),
     Item (weight, cost),
@@ -62,6 +62,15 @@ getRandomBit = randomRIO (0, 1)
 
 getRandomNumber :: Int -> Int -> IO Int
 getRandomNumber low high = randomRIO (low, high)
+
+getRandomFloat :: Float -> Float -> IO Float
+getRandomFloat low high = randomRIO (low, high)
+
+-- getRandomFloat :: Float -> Float -> IO Float
+-- getRandomFloat low high = do
+--   gen <- newStdGen
+--   let (value, newGen) = randomR (low, high) gen :: (Float, StdGen)
+--   return value
 
 replaceBitOnPosition :: [Int] -> Int -> [Int]
 replaceBitOnPosition _ 0 = []

@@ -13,7 +13,7 @@ module State (initState, stateWithMaxValue, randomlyFilledState, statesConstrain
 import Types (
     State (State, filled, value, sWeight),
     Item (weight, cost),
-    Knapsack (items, maxWeight, minCost, Knapsack))
+    Knapsack (items, maxWeight, minCost))
 import Helpers (getRandomBit)
 import Control.Monad (replicateM)
 
@@ -54,7 +54,8 @@ randomlyFilledState sack = do
 
 statesConstrainedValue :: Knapsack -> State -> Float
 statesConstrainedValue sack state
-    | sWeight state > maxWeight sack || value state < minCost sack = negate 1 / fromIntegral countedValue
-    | otherwise = fromIntegral $ value state
+    -- + 42 just so we dont have negative values
+    | sWeight state > maxWeight sack || value state < minCost sack = (negate 1 / fromIntegral countedValue) + 42
+    | otherwise = fromIntegral $ value state + 42
     where
         countedValue = (maxWeight sack - sWeight state) + (value state - minCost sack)

@@ -8,17 +8,17 @@
 
 module OptimizedSolver (solveSa) where
 import Types (
-    ReturnType (Print, Failure, Debug, Success),
-    State (filled, value),
-    Knapsack (minCost))
+    ReturnType (Print, Failure, Success),
+    State (filled, value, sWeight),
+    Knapsack (minCost, maxWeight))
 import State (randomlyFilledState, statesConstrainedValue, initState)
-import Helpers (printResult, getRandomNumber, replaceBitOnPosition)
+import Helpers (printResult, getRandomNumber, getRandomFloat, replaceBitOnPosition)
 
 solveSa :: ReturnType -> IO ()
 solveSa (Print a) = do
     extractedState <- randomlyFilledState a
-    resultState <- saIteration a extractedState 10000.00 0.98 1
-    let result = if value resultState >= minCost a
+    resultState <- saIteration a extractedState 50.00 0.99 1
+    let result = if (value resultState >= minCost a) && (sWeight resultState <= maxWeight a)
         then Success $ filled resultState
         else Failure False
     printResult result
@@ -33,10 +33,15 @@ saIteration sack currentState tmp alpha iter = do
     neighbor <- makeRandomNeighbor sack currentState
     let currentValue = statesConstrainedValue sack currentState
     let neighborsValue = statesConstrainedValue sack neighbor
-    let nextState = if neighborsValue >= currentValue
+    let p = exp $ (neighborsValue - currentValue) / tmp
+    rand <- getRandomFloat 0 1
+    let nextState = if (neighborsValue > currentValue) || (rand < p)
         then neighbor
         else currentState
-    saIteration sack nextState tmp alpha (iter + 1)
+
+    let newTmp = tmp * alpha
+    let newConstrainedTmp = if newTmp > 0.000001 then newTmp else 0.000001
+    saIteration sack nextState newConstrainedTmp alpha (iter + 1)
 
 makeRandomNeighbor :: Knapsack -> State -> IO State
 makeRandomNeighbor sack state = do

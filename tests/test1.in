@@ -4,7 +4,7 @@ minCost: 50
 items: [
     Item {
     weight: 50
-    cost: 100
+    cost: 30
     }
     Item {
     weight: 20
@@ -16,7 +16,7 @@ items: [
     }
     Item {
     weight: 30
-    cost: 20
+    cost: 10
     }
 ]
 }
