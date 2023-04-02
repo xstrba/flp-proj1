@@ -23,3 +23,9 @@ $ ./flp22-fun -i ./tests/test1.in # vypise knapsack
 $ ./flp22-fun -b ./tests/test1.in # pokusi sa najst riesenie brute force metodou
 $ ./flp22-fun -o ./tests/test1.in # pokusi sa najst riesenie metodou simulovaneho zihani
 ```
+
+### Vytvorenie archívu
+
+```bash
+$ make zip
+```

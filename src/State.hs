@@ -48,7 +48,7 @@ stateWithMaxValue (x:xs)
     where maxValueState = stateWithMaxValue xs
 
 stateWithMaxConstrainedValue :: [State] -> Knapsack -> State
-stateWithMaxConstrainedValue [x] a = x
+stateWithMaxConstrainedValue [x] _ = x
 stateWithMaxConstrainedValue (x:xs) a
     | statesConstrainedValue a maxValueState > statesConstrainedValue a x = maxValueState
     | otherwise = x
@@ -63,5 +63,3 @@ statesConstrainedValue :: Knapsack -> State -> Float
 statesConstrainedValue sack state
     | sWeight state > maxWeight sack || value state < minCost sack = 0.00
     | otherwise = fromIntegral $ value state
-    where
-        countedValue = (maxWeight sack - sWeight state) + (value state - minCost sack)
